@@ -1,3 +1,6 @@
+# e-commerce
+Run `npm start` and run GraphQL server from this link https://github.com/scandiweb/junior-react-endpoint. The GraphQL server must be run on localhost:4000.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
