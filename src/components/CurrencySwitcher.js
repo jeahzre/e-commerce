@@ -9,7 +9,7 @@ class CurrencySwitcher extends Component {
       buttonLocation,
       isCurrencySwitcherOpen,
     } = this.props;
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <>
         <button onClick={handleToggleCurrencySwitcher}>

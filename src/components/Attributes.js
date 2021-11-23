@@ -46,7 +46,6 @@ class Attributes extends Component {
                 >
                   {attribute.items.map((item) => {
                     const { id, value, displayValue } = item;
-                    console.log(item);
                     return (
                       <>
                         <button

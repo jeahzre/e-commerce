@@ -16,9 +16,9 @@ class CartOverlay extends Component {
   }
 
   handleChangeImage(e, lastIndex, productIndex) {
-    console.log(e, lastIndex, productIndex);
+    // console.log(e, lastIndex, productIndex);
     const prevOrNext = e.target.id;
-    console.log(prevOrNext, lastIndex);
+    // console.log(prevOrNext, lastIndex);
     let selectedImageIndex = 0;
     const { cart } = this.context;
     // With selected image index
@@ -80,7 +80,7 @@ class CartOverlay extends Component {
         "If we have added selectedImageIndex on this component state."
       );
       const prevCart = this.state.cartWithSelectedImageIndex;
-      console.log(productIndex);
+      // console.log(productIndex);
       newCart = [
         ...prevCart.slice(0, productIndex),
         {
@@ -91,7 +91,7 @@ class CartOverlay extends Component {
       ];
     }
 
-    console.log(newCart);
+    // console.log(newCart);
     this.setState({
       cartWithSelectedImageIndex: newCart,
     });
@@ -100,19 +100,19 @@ class CartOverlay extends Component {
   render() {
     const { cart, cartProducts, handleClearAllProducts } = this.context;
     const { handleToggleHeaderCart, buttonLocation } = this.props;
-    console.log(cart, cartProducts);
+    // console.log(cart, cartProducts);
     console.log("CartOverlay state", this.state);
     let totalAmount = 0;
     cart.map((product) => {
       product.attributes.map((attribute) => {
-        console.log(attribute);
+        // console.log(attribute);
         totalAmount += attribute.amount;
         return null;
       });
       return null;
     });
     let totalPrice = 0;
-    console.log(cartProducts);
+    // console.log(cartProducts);
 
     cartProducts.map((cartProduct) => {
       let productAmount = 0;

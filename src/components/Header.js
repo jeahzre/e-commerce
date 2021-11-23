@@ -15,12 +15,13 @@ class Header extends Component {
     this.handleToggleCurrencySwitcher =
       this.handleToggleCurrencySwitcher.bind(this);
     this.handleToggleHeaderCart = this.handleToggleHeaderCart.bind(this);
+    this.handleSwitchTheme = this.handleSwitchTheme.bind(this);
   }
 
   static contextType = AppContext;
 
   handleToggleCurrencySwitcher(e) {
-    console.log(e.currentTarget);
+    // console.log(e.currentTarget);
     const button = e.target.getBoundingClientRect();
     const buttonBottom = button.bottom;
     this.setState({
@@ -36,6 +37,10 @@ class Header extends Component {
       isCartOverlayOpen: !this.state.isCartOverlayOpen,
       buttonLocation: { buttonBottom },
     });
+  }
+  
+  handleSwitchTheme() {
+    document.getElementById('body').classList.toggle('dark-theme')
   }
 
   render() {
@@ -88,29 +93,32 @@ class Header extends Component {
             <Link to="/" className="logo">
               <img src="/shop-logo.svg" alt="shop-logo" className="logo-img" />
             </Link>
-            <div id="action">
-              <div id="currency-action">
-                <CurrencySwitcher {...currencySwitcherProps} />
+            <div className="action-theme">
+              <div id="action">
+                <div id="currency-action">
+                  <CurrencySwitcher {...currencySwitcherProps} />
+                </div>
+                <div className="cart-overlay-action">
+                  <button
+                    className="header-cart-btn"
+                    onClick={this.handleToggleHeaderCart}
+                  >
+                    <img
+                      src="/shopping-cart.svg"
+                      alt="cart"
+                      className="shopping-cart-img"
+                    />
+                    <span id="header-total-amount">{totalAmount}</span>
+                  </button>
+                  {this.state.isCartOverlayOpen && (
+                    <CartOverlay
+                      buttonLocation={this.state.buttonLocation}
+                      handleToggleHeaderCart={this.handleToggleHeaderCart}
+                    />
+                  )}
+                </div>
               </div>
-              <div className="cart-overlay-action">
-                <button
-                  className="header-cart-btn"
-                  onClick={this.handleToggleHeaderCart}
-                >
-                  <img
-                    src="/shopping-cart.svg"
-                    alt="cart"
-                    className="shopping-cart-img"
-                  />
-                  <span id="header-total-amount">{totalAmount}</span>
-                </button>
-                {this.state.isCartOverlayOpen && (
-                  <CartOverlay
-                    buttonLocation={this.state.buttonLocation}
-                    handleToggleHeaderCart={this.handleToggleHeaderCart}
-                  />
-                )}
-              </div>
+              <div id="toggle-theme" onClick={this.handleSwitchTheme}>Theme</div>
             </div>
           </header>
         </div>

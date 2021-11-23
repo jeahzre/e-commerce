@@ -15,9 +15,9 @@ class Cart extends Component {
   }
 
   handleChangeImage(e, lastIndex, productIndex) {
-    console.log(e, lastIndex, productIndex);
+    // console.log(e, lastIndex, productIndex);
     const prevOrNext = e.target.id;
-    console.log(prevOrNext, lastIndex);
+    // console.log(prevOrNext, lastIndex);
     let selectedImageIndex = 0;
     const { cart } = this.context;
     // With selected image index
@@ -79,7 +79,6 @@ class Cart extends Component {
         "If we have added selectedImageIndex on this component state."
       );
       const prevCart = this.state.cartWithSelectedImageIndex;
-      console.log(productIndex);
       newCart = [
         ...prevCart.slice(0, productIndex),
         {
@@ -90,7 +89,7 @@ class Cart extends Component {
       ];
     }
 
-    console.log(newCart);
+    // console.log(newCart);
     this.setState({
       cartWithSelectedImageIndex: newCart,
     });
@@ -98,7 +97,7 @@ class Cart extends Component {
 
   render() {
     const { cart, cartProducts, handleClearAllProducts } = this.context;
-    console.log(this.state);
+    console.log('Cart state', this.state);
 
     return (
       <>
@@ -115,7 +114,6 @@ class Cart extends Component {
                     this.state.cartWithSelectedImageIndex,
                   handleChangeImage: this.handleChangeImage,
                 };
-                console.log(cartProduct);
                 return <CartProduct {...cartProductProps} />;
               })}
             {(cart.length === 0 || cart[0].id === "") && <h1>No Products</h1>}

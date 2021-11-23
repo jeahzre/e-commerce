@@ -23,11 +23,12 @@ class CartProduct extends Component {
       cartWithSelectedImageIndex,
       cartProduct,
       productIndex,
+      handleSetIsNotAnyInCart
     } = this.props;
     let chosenAttributesGroupIndex = 0;
     const { id, name, brand, prices, chosenAttributesGroups, gallery } =
       cartProduct;
-    console.log(cartProduct, this.props);
+    // console.log(cartProduct, this.props);
 
     return (
       <div key={`${id}_cart_product_container`} className="product-container">
@@ -78,7 +79,7 @@ class CartProduct extends Component {
                     <div className="attributes-container">
                       {cartProduct.attributes.map((attribute) => {
                         const { id, items, name, type } = attribute;
-                        console.log(type);
+                        const isDarkTheme = document.getElementById('body').classList.contains('dark-theme');
 
                         if (type === "swatch") {
                           return (
@@ -120,10 +121,10 @@ class CartProduct extends Component {
                                   {items &&
                                     items.map((item) => {
                                       const { value, displayValue, id } = item;
-                                      console.log(
-                                        item.value,
-                                        chosenAttributesGroup[attribute.name]
-                                      );
+                                      // console.log(
+                                      //   item.value,
+                                      //   chosenAttributesGroup[attribute.name]
+                                      // );
                                       const isOptionChosen =
                                         item.value ===
                                         chosenAttributesGroup[attribute.name];
@@ -171,37 +172,57 @@ class CartProduct extends Component {
                                   >
                                     {items &&
                                       items.map((item) => {
-                                        console.log(
-                                          item.value,
-                                          chosenAttributesGroup[attribute.name]
-                                        );
                                         const { value, displayValue, id } =
                                           item;
                                         const isOptionChosen =
                                           item.value ===
                                           chosenAttributesGroup[attribute.name];
 
-                                        return (
-                                          <button
-                                            className="option-btn"
-                                            value={value}
-                                            key={`${id}_cart_attribute_description`}
-                                            data-clicked="false"
-                                            style={{
-                                              backgroundColor: isOptionChosen
-                                                ? "#000"
-                                                : "#fff",
-                                              color: isOptionChosen
-                                                ? "#fff"
-                                                : "#000",
-                                              border: isOptionChosen
-                                                ? "1px solid #fff"
-                                                : "1px solid #000",
-                                            }}
-                                          >
-                                            {displayValue}
-                                          </button>
-                                        );
+                                        if (isDarkTheme) {
+                                          return (
+                                            <button
+                                              className="option-btn"
+                                              value={value}
+                                              key={`${id}_cart_attribute_description`}
+                                              data-clicked="false"
+                                              style={{
+                                                backgroundColor: isOptionChosen
+                                                  ? "#fff"
+                                                  : "#000",
+                                                color: isOptionChosen
+                                                  ? "#000"
+                                                  : "#fff",
+                                                border: isOptionChosen
+                                                  ? "1px solid #000"
+                                                  : "1px solid #fff",
+                                              }}
+                                            >
+                                              {displayValue}
+                                            </button>
+                                          );
+                                        } else if (!isDarkTheme) {
+                                          return (
+                                            <button
+                                              className="option-btn"
+                                              value={value}
+                                              key={`${id}_cart_attribute_description`}
+                                              data-clicked="false"
+                                              style={{
+                                                backgroundColor: isOptionChosen
+                                                  ? "#000"
+                                                  : "#fff",
+                                                color: isOptionChosen
+                                                  ? "#fff"
+                                                  : "#000",
+                                                border: isOptionChosen
+                                                  ? "1px solid #fff"
+                                                  : "1px solid #000",
+                                              }}
+                                            >
+                                              {displayValue}
+                                            </button>
+                                          );
+                                        }
                                       })}
                                   </div>
                                 </div>
@@ -264,11 +285,15 @@ class CartProduct extends Component {
                     >
                       <button
                         className="remove-attribute-group-btn"
-                        onClick={() =>
+                        onClick={() => {
                           handleRemoveAttributesGroup(
                             productIndex,
                             chosenAttributesGroupIndex
                           )
+                          if (handleSetIsNotAnyInCart && chosenAttributesGroups.length === 1) {
+                            handleSetIsNotAnyInCart();
+                          };
+                        }
                         }
                         key={`${id}_cart_remove_attribute_group_btn`}
                       >
@@ -385,7 +410,12 @@ class CartProduct extends Component {
         >
           <button
             className="clear-all-attributes-groups-btn"
-            onClick={() => handleClearAllAttributeGroups(productIndex)}
+            onClick={() => {
+              handleClearAllAttributeGroups(productIndex)
+              if (handleSetIsNotAnyInCart) {
+                handleSetIsNotAnyInCart();
+              }
+            }}
             key={`${id}_cart_clear_all_attributes_groups_btn`}
           >
             {cartProduct.chosenAttributesGroups.length > 1

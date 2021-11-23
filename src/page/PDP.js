@@ -40,12 +40,12 @@ class Description extends Component {
       allAttributes.push(attribute.id);
       return null;
     });
-    console.log(
-      "check attribute",
-      allAttributes.every((mandatoryAttribute) =>
-        Object.keys(attributes).includes(mandatoryAttribute)
-      )
-    );
+    // console.log(
+    //   "check attribute",
+    //   allAttributes.every((mandatoryAttribute) =>
+    //     Object.keys(attributes).includes(mandatoryAttribute)
+    //   )
+    // );
     // Check whether we have chosen all attributes.
     if (
       allAttributes.every((mandatoryAttribute) =>
@@ -154,7 +154,6 @@ class Description extends Component {
                           {selectedAttributes &&
                             selectedAttributes.Color &&
                             attribute.items.map((item) => {
-                              console.log(item.value, selectedAttributes.Color);
                               if (item.value === selectedAttributes.Color) {
                                 return (
                                   <p className="color-display-value">
@@ -172,7 +171,6 @@ class Description extends Component {
                           >
                             {attribute.items.map((item) => {
                               const { id, value, displayValue } = item;
-                              console.log(item);
                               return (
                                 <>
                                   <button
@@ -270,7 +268,6 @@ class Description extends Component {
                         cartProduct,
                         productIndex,
                       };
-                      console.log(cartProduct);
                       return <CartProduct {...cartProductProps} />;
                     } else {
                       return null;

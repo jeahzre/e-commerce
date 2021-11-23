@@ -4,13 +4,22 @@ import Category from "./page/Category";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import PDP from "./page/PDP";
 import Cart from "./page/Cart";
-import { Component } from "react";
+import React, { Component } from "react";
+import ScrollToTop from "./components/ScrollToTop";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+
+    }
+  }
   render() {
+    console.log(window.location);
     return (
       <>
         <BrowserRouter>
+          <ScrollToTop/>
           <Header />
           <Routes>
             <Route path="/" element={<Category />} />

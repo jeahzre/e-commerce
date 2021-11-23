@@ -88,7 +88,6 @@ class AppProvider extends Component {
               `,
           })
           .then((result) => {
-            console.log(result.data);
             const newState = {
               categories: [result.data.category.name, ...categories],
               category: result.data.category.name,
@@ -121,7 +120,6 @@ class AppProvider extends Component {
     if (category === "all") {
       category = "";
     }
-    console.log("category", category);
     const client = new ApolloClient({
       uri: "http://localhost:4000/",
       cache: new InMemoryCache(),
@@ -161,13 +159,11 @@ class AppProvider extends Component {
           `,
       })
       .then((result) => {
-        console.log(result);
         const newState = {
           category: result.data.category.name,
           productsByCategory: result.data.category.products,
           loading: result.loading,
         };
-        console.log(newState);
         this.setState(newState);
       });
   }
@@ -185,7 +181,6 @@ class AppProvider extends Component {
       uri: "http://localhost:4000/",
       cache: new InMemoryCache(),
     });
-    console.log(id);
 
     return new Promise((resolve) => {
       client
@@ -218,7 +213,6 @@ class AppProvider extends Component {
           `,
         })
         .then((result) => {
-          console.log(result);
           if (onPDP) {
             this.setState({ PDP: result.data.product });
           }
@@ -227,15 +221,17 @@ class AppProvider extends Component {
     });
   }
 
-  // Description.js
-  handleClickAttributeBtns(e) {
+  // Description.js & ProductCard.js
+  handleClickAttributeBtns(e, onProductCard) {
     const attributeOptions = e.target.closest(".attribute-options");
     const attributeType = e.target.dataset.attributeType;
     const attributeName = attributeOptions.dataset.attributeName;
     const attributeValue = e.target.value;
     const optionBtnsByAttribute =
       attributeOptions.getElementsByClassName("option-btn");
-    console.log(attributeName, attributeValue, attributeType);
+    const isDarkTheme = document.getElementById('body').classList.contains('dark-theme');
+
+    // console.log(attributeName, attributeValue, attributeType);
 
     if (attributeType === "swatch") {
       Array.from(optionBtnsByAttribute).map((optionBtn) => {
@@ -244,7 +240,11 @@ class AppProvider extends Component {
           e.target.dataset.clicked === "false" &&
           optionBtn.dataset.clicked === "true"
         ) {
-          optionBtn.style.border = "3px solid #fff";
+          if (isDarkTheme) {
+            optionBtn.style.border = "3px solid #000";
+          } else {
+            optionBtn.style.border = "3px solid #fff";
+          }
           optionBtn.dataset.clicked = "false";
         }
         return null;
@@ -252,7 +252,11 @@ class AppProvider extends Component {
 
       // Following conditional statement must be in if else statement and not in if if statement. Otherwise, data-clicked will be changed to false and fulfill the false condition, too.
       if (e.target.dataset.clicked === "true") {
-        e.target.style.border = "3px solid #fff";
+        if (isDarkTheme) {
+          e.target.style.border = "3px solid #000";
+        } else {
+          e.target.style.border = "3px solid #fff";
+        }
         e.target.dataset.clicked = "false";
         // Remove attribute name property from state.
         const prevAttributes = { ...this.state.attributes };
@@ -266,7 +270,12 @@ class AppProvider extends Component {
           attributes: newAttributes,
         });
       } else if (e.target.dataset.clicked === "false") {
-        e.target.style.border = "3px solid #808080";
+        if (isDarkTheme) {
+          e.target.style.border = "3px solid #fff";
+        } else {
+          e.target.style.border = "3px solid #808080";
+        }
+
         e.target.dataset.clicked = "true";
         // es6 computed property name e.g {[a]:''}
         this.setState({
@@ -283,8 +292,13 @@ class AppProvider extends Component {
           e.target.dataset.clicked === "false" &&
           optionBtn.dataset.clicked === "true"
         ) {
-          optionBtn.style.backgroundColor = "#fff";
-          optionBtn.style.color = "#000";
+          if (isDarkTheme) {
+            optionBtn.style.backgroundColor = "#000";
+            optionBtn.style.color = "#fff";
+          } else {
+            optionBtn.style.backgroundColor = "#fff";
+            optionBtn.style.color = "#000";
+          }
           optionBtn.dataset.clicked = "false";
         }
         return null;
@@ -292,12 +306,16 @@ class AppProvider extends Component {
 
       // Following conditional statement must be in if else statement and not in if if statement. Otherwise, data-clicked will be changed to false and fulfill the false condition, too.
       if (e.target.dataset.clicked === "true") {
-        e.target.style.backgroundColor = "#fff";
-        e.target.style.color = "#000";
+        if (isDarkTheme) {
+          e.target.style.backgroundColor = "#000";
+          e.target.style.color = "#fff";
+        } else {
+          e.target.style.backgroundColor = "#fff";
+          e.target.style.color = "#000";
+        }
         e.target.dataset.clicked = "false";
         // Remove attribute name property from state.
         const prevAttributes = { ...this.state.attributes };
-        console.log(prevAttributes);
         let newAttributes = {};
         for (let key in this.state.attributes) {
           if (attributeName !== key) {
@@ -308,16 +326,23 @@ class AppProvider extends Component {
           attributes: newAttributes,
         });
       } else if (e.target.dataset.clicked === "false") {
-        e.target.style.backgroundColor = "#000";
-        e.target.style.color = "#fff";
+        if (isDarkTheme) {
+          e.target.style.backgroundColor = "#fff";
+          e.target.style.color = "#000";
+        } else {
+          e.target.style.backgroundColor = "#000";
+          e.target.style.color = "#fff";
+        }
         e.target.dataset.clicked = "true";
         // es6 computed property name e.g {[a]:''}
-        this.setState({
-          attributes: {
-            ...this.state.attributes,
-            [attributeName]: attributeValue,
-          },
-        });
+        if (!onProductCard) {
+          this.setState({
+            attributes: {
+              ...this.state.attributes,
+              [attributeName]: attributeValue,
+            },
+          })
+        };
       }
     }
   }
@@ -335,7 +360,6 @@ class AppProvider extends Component {
       id = urlParams.get("id");
     } else {
       id = idToAdd;
-      console.log("id", idToAdd);
     }
     const initialItem = {
       id: id,
@@ -454,8 +478,7 @@ class AppProvider extends Component {
         ];
       }
     }
-
-    console.log("newCart", newCart);
+    
     // Fetch products specific data.
     newCart.map((product, productIndex) => {
       const { id, attributes } = product;
