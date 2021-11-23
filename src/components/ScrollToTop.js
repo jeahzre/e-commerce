@@ -1,5 +1,5 @@
+// In progress. 
 import React from "react";
-
 class ScrollToTop extends React.Component {
 
   render() {
