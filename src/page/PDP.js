@@ -27,6 +27,10 @@ class Description extends Component {
     getSingleProduct(id, true);
   }
 
+  componentWillUnmount() {
+    window.scrollTo(0, 0);
+  }
+
   handleOptionsClicked(e) {
     this.setState({
       selectedImageIndex: Number(e.target.dataset.index),
@@ -46,6 +50,7 @@ class Description extends Component {
     //     Object.keys(attributes).includes(mandatoryAttribute)
     //   )
     // );
+    
     // Check whether we have chosen all attributes.
     if (
       allAttributes.every((mandatoryAttribute) =>
@@ -170,7 +175,7 @@ class Description extends Component {
                             key={`${id}_${name}_pdp_attribute_options`}
                           >
                             {attribute.items.map((item) => {
-                              const { id, value, displayValue } = item;
+                              const { id, value } = item;
                               return (
                                 <>
                                   <button
@@ -228,6 +233,7 @@ class Description extends Component {
                         </>
                       );
                     }
+                    return null;
                   })}
                 </div>
                 <div className="price-container">

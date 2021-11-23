@@ -113,7 +113,7 @@ class AppProvider extends Component {
         this.setState(newState);
       });
   }
-
+  
   // Header.js
   handleCategoryUpdate(e) {
     let category = e.target.id;
@@ -503,9 +503,8 @@ class AppProvider extends Component {
             cartProducts: newCartProducts,
           });
         });
-      } else {
-        return null;
       }
+      return null;
     });
   }
 

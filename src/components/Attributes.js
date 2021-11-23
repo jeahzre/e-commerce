@@ -28,7 +28,6 @@ class Attributes extends Component {
                 {selectedAttributes &&
                   selectedAttributes.Color &&
                   attribute.items.map((item) => {
-                    console.log(item.value, selectedAttributes.Color);
                     if (item.value === selectedAttributes.Color) {
                       return (
                         <p className="color-display-value">
@@ -45,7 +44,7 @@ class Attributes extends Component {
                   key={`${id}_${name}_pdp_attribute_options`}
                 >
                   {attribute.items.map((item) => {
-                    const { id, value, displayValue } = item;
+                    const { id, value } = item;
                     return (
                       <>
                         <button
@@ -103,6 +102,7 @@ class Attributes extends Component {
               </>
             );
           }
+          return null;
         })}
       </div>
     );

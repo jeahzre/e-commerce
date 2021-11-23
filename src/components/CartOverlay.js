@@ -118,13 +118,16 @@ class CartOverlay extends Component {
       let productAmount = 0;
       cartProduct.chosenAttributesGroups.map((chosenAttributesGroup) => {
         productAmount += chosenAttributesGroup.amount;
+        return null;
       });
 
       cartProduct.prices.map((price) => {
         if (price.currency === this.context.currency) {
           totalPrice += price.amount * productAmount;
         }
+        return null;
       });
+      return null;
     });
 
     return (

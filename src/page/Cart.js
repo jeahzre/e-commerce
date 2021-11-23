@@ -14,6 +14,10 @@ class Cart extends Component {
     this.handleChangeImage = this.handleChangeImage.bind(this);
   }
 
+  componentWillUnmount() {
+    window.scrollTo(0, 0);
+  }
+
   handleChangeImage(e, lastIndex, productIndex) {
     // console.log(e, lastIndex, productIndex);
     const prevOrNext = e.target.id;

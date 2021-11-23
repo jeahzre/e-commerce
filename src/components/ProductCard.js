@@ -97,7 +97,6 @@ class ProductCard extends Component {
   }
 
   render() {
-    const { productIndex } = this.props;
     const { id, name, gallery, prices, brand, inStock, attributes } =
       this.state.productCard;
     const { cartProducts, handleAddToCart } = this.context;

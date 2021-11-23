@@ -16,6 +16,10 @@ class Category extends Component {
     this.handleSwitchPage = this.handleSwitchPage.bind(this);
   }
 
+  componentWillUnmount() {
+    window.scrollTo(0, 0)
+  }
+
   handleSetSearchProduct(e) {
     this.setState({
       searchProduct: e.target.value
@@ -74,6 +78,7 @@ class Category extends Component {
                   />)
                 }
               }
+              return null;
             })}
           </div>
           {

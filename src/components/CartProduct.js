@@ -16,7 +16,6 @@ class CartProduct extends Component {
       handleChangeAmount,
       handleRemoveAttributesGroup,
       handleClearAllAttributeGroups,
-      handleAddPrice,
     } = this.context;
     const {
       handleChangeImage,
@@ -120,11 +119,7 @@ class CartProduct extends Component {
                                 >
                                   {items &&
                                     items.map((item) => {
-                                      const { value, displayValue, id } = item;
-                                      // console.log(
-                                      //   item.value,
-                                      //   chosenAttributesGroup[attribute.name]
-                                      // );
+                                      const { value, id } = item;
                                       const isOptionChosen =
                                         item.value ===
                                         chosenAttributesGroup[attribute.name];
@@ -223,6 +218,7 @@ class CartProduct extends Component {
                                             </button>
                                           );
                                         }
+                                        return null;
                                       })}
                                   </div>
                                 </div>
@@ -230,6 +226,7 @@ class CartProduct extends Component {
                             </>
                           );
                         }
+                        return null;
                       })}
                     </div>
                     <div
