@@ -40,11 +40,12 @@ class Category extends Component {
     const { category: categoryContex, productsByCategory } = this.context;
     // console.log("productsByCategory", productsByCategory);
     let noProductFound = false;
-    console.log('Category state', this.state);
+    // console.log('Category state', this.state);
+
     return (
       <>
         <div className="category">
-          <h1 className="category-name">{categoryContex}</h1>
+          <div className="category-name">{categoryContex}</div>
           <form onSubmit={this.handleSubmit} className="search-form">
             <input className="search-input" type="text" value={this.state.searchProduct} onChange={this.handleSetSearchProduct} placeholder="Search Product" />
           </form>
@@ -74,7 +75,6 @@ class Category extends Component {
                   return (<ProductCard
                     key={product.id}
                     {...product}
-                    productIndex={productIndex}
                   />)
                 }
               }

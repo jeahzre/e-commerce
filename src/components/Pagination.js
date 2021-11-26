@@ -10,7 +10,7 @@ class Pagination extends Component {
 
   render() {
     const pageNumbers = [];
-    console.log(this.props);
+    // console.log(this.props);
     const { totalProducts, productsPerPage, handleSwitchPage } = this.props;
     for (let i = 1; i <= Math.ceil(totalProducts / productsPerPage); i++) {
       pageNumbers.push(i);

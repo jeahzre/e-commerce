@@ -16,11 +16,10 @@ class CartOverlay extends Component {
   }
 
   handleChangeImage(e, lastIndex, productIndex) {
-    // console.log(e, lastIndex, productIndex);
     const prevOrNext = e.target.id;
-    // console.log(prevOrNext, lastIndex);
     let selectedImageIndex = 0;
     const { cart } = this.context;
+
     // With selected image index
     let newCart = [];
 
@@ -80,7 +79,6 @@ class CartOverlay extends Component {
         "If we have added selectedImageIndex on this component state."
       );
       const prevCart = this.state.cartWithSelectedImageIndex;
-      // console.log(productIndex);
       newCart = [
         ...prevCart.slice(0, productIndex),
         {
@@ -99,20 +97,18 @@ class CartOverlay extends Component {
 
   render() {
     const { cart, cartProducts, handleClearAllProducts } = this.context;
-    const { handleToggleHeaderCart, buttonLocation } = this.props;
+    const { isCartOverlayOpen, headerContainerLocation, handleToggleHeaderCart } = this.props;
     // console.log(cart, cartProducts);
-    console.log("CartOverlay state", this.state);
+    // console.log("CartOverlay state", this.state);
     let totalAmount = 0;
     cart.map((product) => {
       product.attributes.map((attribute) => {
-        // console.log(attribute);
         totalAmount += attribute.amount;
         return null;
       });
       return null;
     });
     let totalPrice = 0;
-    // console.log(cartProducts);
 
     cartProducts.map((cartProduct) => {
       let productAmount = 0;
@@ -132,63 +128,81 @@ class CartOverlay extends Component {
 
     return (
       <>
-        <div className="cart-overlay-bg"></div>
+        {
+          isCartOverlayOpen &&
+          <div className="cart-overlay-bg"></div>
+        }
         <div
-          className="cart-overlay-container"
-          style={{
-            top: `${buttonLocation.buttonBottom}px`,
-          }}
+          id="cart-overlay-action-container"
+          className="cart-overlay-action-container"
         >
-          <div className="close-btn" onClick={handleToggleHeaderCart}>
-            x
-          </div>
-          <h1 className="cart-title">My Bag, {totalAmount} items</h1>
-          <div className="products-container">
-            {cartProducts &&
-              cartProducts.length > 0 &&
-              cartProducts.map((cartProduct, productIndex) => {
-                const cartProductProps = {
-                  cartProduct,
-                  productIndex,
-                  cartWithSelectedImageIndex:
-                    this.state.cartWithSelectedImageIndex,
-                  handleChangeImage: this.handleChangeImage,
-                };
-                return <CartProduct {...cartProductProps} />;
-              })}
-            {((cartProducts && cart.length === 0) ||
-              (cartProducts && cart[0].id === "")) && <h1>No Products</h1>}
-            {cart.length > 0 && (
-              <>
-                <div className="clear-all-products-container">
-                  <button
-                    className="clear-all-products-btn"
-                    onClick={handleClearAllProducts}
-                  >
-                    Clear All Products
-                  </button>
-                </div>
-                <div className="cart-bottom">
-                  <div className="total-prices-container">
-                    <div className="total-prices-title">Total</div>
-                    <div className="total-prices">
-                      {this.context.currency} {totalPrice.toFixed(2)}
+          <button
+            className="header-cart-btn"
+            onClick={handleToggleHeaderCart}
+          >
+            <img
+              src="/shopping-cart.svg"
+              alt="cart"
+              className="shopping-cart-img"
+            />
+            <span id="header-total-amount">{totalAmount}</span>
+          </button>
+          {isCartOverlayOpen && (
+            <div className="cart-overlay-container" style={{
+              top: `${headerContainerLocation.headerContainerBottom- 10}px`,
+            }}>
+              <button className="close-btn" onClick={handleToggleHeaderCart}>
+                x
+              </button>
+              <div className="cart-title">My Bag, {totalAmount} items</div>
+              <div className="products-container">
+                {cartProducts &&
+                  cartProducts.length > 0 &&
+                  cartProducts.map((cartProduct, productIndex) => {
+                    const cartProductProps = {
+                      cartProduct,
+                      productIndex,
+                      cartWithSelectedImageIndex:
+                        this.state.cartWithSelectedImageIndex,
+                      handleChangeImage: this.handleChangeImage,
+                    };
+                    return <CartProduct {...cartProductProps} key={`${cartProduct.id}_cart_product`} />;
+                  })}
+                {((cartProducts && cart.length === 0) ||
+                  (cartProducts && cart[0].id === "")) && <div>No Products</div>}
+                {cart.length > 0 && (
+                  <>
+                    <div className="clear-all-products-container">
+                      <button
+                        className="clear-all-products-btn"
+                        onClick={handleClearAllProducts}
+                      >
+                        Clear All Products
+                      </button>
                     </div>
-                  </div>
-                  <div className="cart-check-out-buttons-container">
-                    <Link
-                      className="view-bag-btn"
-                      to={"/cart"}
-                      onClick={handleToggleHeaderCart}
-                    >
-                      VIEW BAG
-                    </Link>
-                    <button className="check-out-btn">CHECK OUT</button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+                    <div className="cart-bottom">
+                      <div className="total-prices-container">
+                        <div className="total-prices-title">Total</div>
+                        <div className="total-prices">
+                          {this.context.currency} {totalPrice.toFixed(2)}
+                        </div>
+                      </div>
+                      <div className="cart-check-out-buttons-container">
+                        <Link
+                          className="view-bag-btn"
+                          to={"/cart"}
+                          onClick={handleToggleHeaderCart}
+                        >
+                          VIEW BAG
+                        </Link>
+                        <button className="check-out-btn">CHECK OUT</button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </>
     );

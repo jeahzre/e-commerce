@@ -12,7 +12,10 @@ class AppProvider extends Component {
       category: "",
       currencies: [],
       currency: "USD",
-      // Cart.js (used in)
+      isDarkTheme: false,
+      // Header (used in)
+      isCurrencySwitcherOpen: false,
+      // Cart.js
       cart: [],
       cartProducts: [],
       // PDP.js
@@ -29,10 +32,11 @@ class AppProvider extends Component {
     this.handleClearAllAttributeGroups =
       this.handleClearAllAttributeGroups.bind(this);
     this.handleClearAllProducts = this.handleClearAllProducts.bind(this);
+    this.handleSwitchTheme = this.handleSwitchTheme.bind(this);
+    this.handleGiveCurrencySymbol = this.handleGiveCurrencySymbol.bind(this);
   }
 
   componentDidMount() {
-    console.log(this.state.category);
     const client = new ApolloClient({
       uri: "http://localhost:4000/",
       cache: new InMemoryCache(),
@@ -113,7 +117,25 @@ class AppProvider extends Component {
         this.setState(newState);
       });
   }
-  
+
+  // CurrencySwitcher.js && {price}
+  handleGiveCurrencySymbol(currency_name) {
+    const currency_symbols = {
+      'AUD': 'A$',
+      'EUR': '€',
+      'GBP': '£',
+      'JPY': '¥',
+      'RUB': '₽',
+      'USD': '$',
+    }
+
+    if (currency_symbols[currency_name] !== undefined) {
+      return currency_symbols[currency_name]
+    } else {
+      return currency_name
+    }
+  }
+
   // Header.js
   handleCategoryUpdate(e) {
     let category = e.target.id;
@@ -172,7 +194,15 @@ class AppProvider extends Component {
     const currency = e.target.id;
     this.setState({
       currency,
+      isCurrencySwitcherOpen: false
     });
+  }
+
+  handleSwitchTheme() {
+    document.getElementById('body').classList.toggle('dark-theme');
+    this.setState({
+      isDarkTheme: !this.state.isDarkTheme
+    })
   }
 
   // Description.js & Cart.js
@@ -222,15 +252,13 @@ class AppProvider extends Component {
   }
 
   // Description.js & ProductCard.js
-  handleClickAttributeBtns(e, onProductCard) {
+  handleClickAttributeBtns(e) {
     const attributeOptions = e.target.closest(".attribute-options");
     const attributeType = e.target.dataset.attributeType;
     const attributeName = attributeOptions.dataset.attributeName;
     const attributeValue = e.target.value;
     const optionBtnsByAttribute =
       attributeOptions.getElementsByClassName("option-btn");
-    const isDarkTheme = document.getElementById('body').classList.contains('dark-theme');
-
     // console.log(attributeName, attributeValue, attributeType);
 
     if (attributeType === "swatch") {
@@ -240,11 +268,7 @@ class AppProvider extends Component {
           e.target.dataset.clicked === "false" &&
           optionBtn.dataset.clicked === "true"
         ) {
-          if (isDarkTheme) {
-            optionBtn.style.border = "3px solid #000";
-          } else {
-            optionBtn.style.border = "3px solid #fff";
-          }
+          optionBtn.classList.remove("clicked");
           optionBtn.dataset.clicked = "false";
         }
         return null;
@@ -252,11 +276,8 @@ class AppProvider extends Component {
 
       // Following conditional statement must be in if else statement and not in if if statement. Otherwise, data-clicked will be changed to false and fulfill the false condition, too.
       if (e.target.dataset.clicked === "true") {
-        if (isDarkTheme) {
-          e.target.style.border = "3px solid #000";
-        } else {
-          e.target.style.border = "3px solid #fff";
-        }
+        // If we have clicked the option, now we click it again, then deselect it.
+        e.target.classList.remove("clicked");
         e.target.dataset.clicked = "false";
         // Remove attribute name property from state.
         const prevAttributes = { ...this.state.attributes };
@@ -270,12 +291,7 @@ class AppProvider extends Component {
           attributes: newAttributes,
         });
       } else if (e.target.dataset.clicked === "false") {
-        if (isDarkTheme) {
-          e.target.style.border = "3px solid #fff";
-        } else {
-          e.target.style.border = "3px solid #808080";
-        }
-
+        e.target.classList.add('clicked');
         e.target.dataset.clicked = "true";
         // es6 computed property name e.g {[a]:''}
         this.setState({
@@ -292,13 +308,7 @@ class AppProvider extends Component {
           e.target.dataset.clicked === "false" &&
           optionBtn.dataset.clicked === "true"
         ) {
-          if (isDarkTheme) {
-            optionBtn.style.backgroundColor = "#000";
-            optionBtn.style.color = "#fff";
-          } else {
-            optionBtn.style.backgroundColor = "#fff";
-            optionBtn.style.color = "#000";
-          }
+          optionBtn.classList.remove('clicked');
           optionBtn.dataset.clicked = "false";
         }
         return null;
@@ -306,13 +316,7 @@ class AppProvider extends Component {
 
       // Following conditional statement must be in if else statement and not in if if statement. Otherwise, data-clicked will be changed to false and fulfill the false condition, too.
       if (e.target.dataset.clicked === "true") {
-        if (isDarkTheme) {
-          e.target.style.backgroundColor = "#000";
-          e.target.style.color = "#fff";
-        } else {
-          e.target.style.backgroundColor = "#fff";
-          e.target.style.color = "#000";
-        }
+        e.target.classList.remove('clicked')
         e.target.dataset.clicked = "false";
         // Remove attribute name property from state.
         const prevAttributes = { ...this.state.attributes };
@@ -326,23 +330,15 @@ class AppProvider extends Component {
           attributes: newAttributes,
         });
       } else if (e.target.dataset.clicked === "false") {
-        if (isDarkTheme) {
-          e.target.style.backgroundColor = "#fff";
-          e.target.style.color = "#000";
-        } else {
-          e.target.style.backgroundColor = "#000";
-          e.target.style.color = "#fff";
-        }
+        e.target.classList.add('clicked');
         e.target.dataset.clicked = "true";
         // es6 computed property name e.g {[a]:''}
-        if (!onProductCard) {
-          this.setState({
-            attributes: {
-              ...this.state.attributes,
-              [attributeName]: attributeValue,
-            },
-          })
-        };
+        this.setState({
+          attributes: {
+            ...this.state.attributes,
+            [attributeName]: attributeValue,
+          },
+        })
       }
     }
   }
@@ -392,12 +388,13 @@ class AppProvider extends Component {
             (attribute, index) => {
               // Exclude amount property and take otherKeys.
               const { amount, ...otherKeys } = attribute;
-              console.log(
-                JSON.stringify(otherKeys),
-                JSON.stringify(attributeGroupToAdd),
-                JSON.stringify(otherKeys) ===
-                  JSON.stringify(attributeGroupToAdd)
-              );
+              // console.log(
+              //   JSON.stringify(otherKeys),
+              //   JSON.stringify(attributeGroupToAdd),
+              //   JSON.stringify(otherKeys) ===
+              //   JSON.stringify(attributeGroupToAdd)
+              // );
+
               // If attributeGroupToAdd is same as attributesGroup in our cart.
               if (
                 JSON.stringify(otherKeys) ===
@@ -427,8 +424,8 @@ class AppProvider extends Component {
       // Add to cart.
       if (hasSameID) {
         console.log("has same ID");
-        console.log("index", productIndex, attributeIndex);
-        console.log(this.state.cart[productIndex]);
+        // console.log("index", productIndex, attributeIndex);
+        // console.log(this.state.cart[productIndex]);
 
         if (sameIDsameAttributesGroup) {
           // If has any same attributes group in cart, pick product with same id & attribute and increase the amount.
@@ -478,7 +475,7 @@ class AppProvider extends Component {
         ];
       }
     }
-    
+
     // Fetch products specific data.
     newCart.map((product, productIndex) => {
       const { id, attributes } = product;
@@ -498,6 +495,7 @@ class AppProvider extends Component {
             resolve(newCartProducts);
           });
         }).then((newCartProducts) => {
+          console.log('adding newCartProduct');
           this.setState({
             cart: newCart,
             cartProducts: newCartProducts,
@@ -513,11 +511,11 @@ class AppProvider extends Component {
     const changeAmountType = e.target.id; // Increase or decrease.
     const prevCart = this.state.cart;
     const prevCartProducts = this.state.cartProducts;
-    console.log(productIndex, chosenAttributesGroupIndex);
-    console.log(prevCart);
+    // console.log(productIndex, chosenAttributesGroupIndex);
+    // console.log(prevCart);
     let newCart = [];
     let newCartProducts = [];
-    console.log(changeAmountType);
+    // console.log(changeAmountType);
     if (changeAmountType === "increase-amount") {
       // If newCart has been placed in cartProducts state.
       newCartProducts = [
@@ -531,7 +529,7 @@ class AppProvider extends Component {
             ),
             {
               ...prevCartProducts[productIndex].chosenAttributesGroups[
-                chosenAttributesGroupIndex
+              chosenAttributesGroupIndex
               ],
               amount:
                 prevCartProducts[productIndex].chosenAttributesGroups[
@@ -582,7 +580,7 @@ class AppProvider extends Component {
             ),
             {
               ...prevCartProducts[productIndex].chosenAttributesGroups[
-                chosenAttributesGroupIndex
+              chosenAttributesGroupIndex
               ],
               amount:
                 prevCartProducts[productIndex].chosenAttributesGroups[
@@ -623,7 +621,7 @@ class AppProvider extends Component {
       // If product has zero amount. (If statement based on modified prevCart.)
       if (
         prevCart[productIndex].attributes[chosenAttributesGroupIndex].amount -
-          1 <=
+        1 <=
         0
       ) {
         if (newCartProducts[productIndex].chosenAttributesGroups.length > 1) {
@@ -663,7 +661,7 @@ class AppProvider extends Component {
             },
             ...prevCartProducts.slice(productIndex + 1),
           ];
-          console.log("newCartProducts", newCartProducts);
+          // console.log("newCartProducts", newCartProducts);
         } else if (
           newCartProducts[productIndex].chosenAttributesGroups.length === 1 &&
           newCartProducts[productIndex].chosenAttributesGroups[
@@ -685,8 +683,8 @@ class AppProvider extends Component {
       }
     }
 
-    console.log("newCartProducts", newCartProducts);
-    console.log("newCart", newCart);
+    // console.log("newCartProducts", newCartProducts);
+    // console.log("newCart", newCart);
     this.setState({
       cart: newCart,
       cartProducts: newCartProducts,
@@ -694,7 +692,7 @@ class AppProvider extends Component {
   }
 
   handleRemoveAttributesGroup(productIndex, chosenAttributesGroupIndex) {
-    console.log(productIndex, chosenAttributesGroupIndex);
+    // console.log(productIndex, chosenAttributesGroupIndex);
     let newCart = [];
     let newCartProducts = [];
     const prevCart = this.state.cart;
@@ -781,7 +779,8 @@ class AppProvider extends Component {
   }
 
   render() {
-    console.log(this.state);
+    console.log('context state', this.state);
+
     const {
       categories,
       category,
@@ -792,7 +791,10 @@ class AppProvider extends Component {
       cart,
       attributes,
       cartProducts,
+      isDarkTheme,
+      isCurrencySwitcherOpen,
     } = this.state;
+
     const value = {
       productsByCategory,
       categories,
@@ -803,6 +805,8 @@ class AppProvider extends Component {
       cart,
       attributes,
       cartProducts,
+      isDarkTheme,
+      isCurrencySwitcherOpen,
       handleSwitchCurrency: this.handleSwitchCurrency,
       handleCategoryUpdate: this.handleCategoryUpdate,
       getSingleProduct: this.getSingleProduct,
@@ -812,6 +816,8 @@ class AppProvider extends Component {
       handleRemoveAttributesGroup: this.handleRemoveAttributesGroup,
       handleClearAllAttributeGroups: this.handleClearAllAttributeGroups,
       handleClearAllProducts: this.handleClearAllProducts,
+      handleSwitchTheme: this.handleSwitchTheme,
+      handleGiveCurrencySymbol: this.handleGiveCurrencySymbol,
     };
 
     return (

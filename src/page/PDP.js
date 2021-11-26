@@ -3,6 +3,7 @@ import { AppContext } from "../context";
 import ReactHtmlParser from "react-html-parser";
 import { Link } from "react-router-dom";
 import CartProduct from "../components/CartProduct";
+import Attributes from "../components/Attributes";
 
 class Description extends Component {
   // Value provided from context.js. To get the context property value, use this.context.
@@ -86,8 +87,17 @@ class Description extends Component {
       handleAddToCart,
       handleClickAttributeBtns,
       attributes: selectedAttributes,
+      handleGiveCurrencySymbol
     } = this.context;
     console.log("PDP state", this.state);
+    let attributesProps = {};
+    if (PDP) {
+      attributesProps = {
+        attributes: PDP.attributes,
+        selectedAttributes,
+        handleClickAttributeBtns,
+      };
+    }
 
     return (
       <>
@@ -141,108 +151,14 @@ class Description extends Component {
               <div className="description">
                 <h1 className="brand">{PDP.brand}</h1>
                 <h2 className="product-name">{PDP.name}</h2>
-                <div className="attributes-container">
-                  {PDP.attributes.map((attribute) => {
-                    const { id, name, items, type } = attribute;
-                    if (type === "swatch") {
-                      return (
-                        <div
-                          className="attribute-container"
-                          key={`${id}_pdp_attribute_container`}
-                        >
-                          <div
-                            className="attribute-title"
-                            key={`${id}_pdp_attribute_title`}
-                          >
-                            {name}
-                          </div>
-                          {selectedAttributes &&
-                            selectedAttributes.Color &&
-                            attribute.items.map((item) => {
-                              if (item.value === selectedAttributes.Color) {
-                                return (
-                                  <p className="color-display-value">
-                                    {item.displayValue}
-                                  </p>
-                                );
-                              } else {
-                                return null;
-                              }
-                            })}
-                          <div
-                            data-attribute-name={id}
-                            className="attribute-options color-swatch-container"
-                            key={`${id}_${name}_pdp_attribute_options`}
-                          >
-                            {attribute.items.map((item) => {
-                              const { id, value } = item;
-                              return (
-                                <>
-                                  <button
-                                    className="color-swatch option-btn"
-                                    style={{
-                                      backgroundColor: value,
-                                    }}
-                                    key={`${id}_color_swatch_product_card`}
-                                    value={value}
-                                    onClick={handleClickAttributeBtns}
-                                    data-clicked="false"
-                                    data-attribute-type={type}
-                                  ></button>
-                                </>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      );
-                    } else if (type !== "swatch") {
-                      return (
-                        <>
-                          <div
-                            className="attribute-container"
-                            key={`${id}_pdp_attribute_container`}
-                          >
-                            <div
-                              className="attribute-title"
-                              key={`${id}_${name}_pdp_attribute_title`}
-                            >
-                              {name}
-                            </div>
-                            <div
-                              data-attribute-name={id}
-                              className="attribute-options"
-                              key={`${id}_${name}_pdp_attribute_options`}
-                            >
-                              {items.map((item) => {
-                                const { value, displayValue, id } = item;
-                                return (
-                                  <button
-                                    className="option-btn"
-                                    value={value}
-                                    onClick={handleClickAttributeBtns}
-                                    key={`${id}_attribute_description`}
-                                    data-clicked="false"
-                                    data-attribute-type={type}
-                                  >
-                                    {displayValue}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        </>
-                      );
-                    }
-                    return null;
-                  })}
-                </div>
+                <Attributes {...attributesProps}/>
                 <div className="price-container">
                   <div className="price-title">PRICE</div>
                   {PDP.prices.map((price) => {
                     if (price.currency === this.context.currency) {
                       return (
                         <p key={`${price.currency}_pdp_currency_${PDP.id}`}>
-                          {price.currency}&nbsp;{price.amount}
+                          {handleGiveCurrencySymbol(price.currency)}&nbsp;{price.amount}
                         </p>
                       );
                     } else {
@@ -274,7 +190,7 @@ class Description extends Component {
                         cartProduct,
                         productIndex,
                       };
-                      return <CartProduct {...cartProductProps} />;
+                      return <CartProduct {...cartProductProps} key={`${cartProduct.id}_cart_product_pdp`}/>;
                     } else {
                       return null;
                     }

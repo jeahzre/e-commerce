@@ -1,43 +1,57 @@
 import { Component } from "react";
+import { AppContext } from "../context";
 
 class CurrencySwitcher extends Component {
+  static contextType = AppContext;
+
   render() {
     const {
       handleToggleCurrencySwitcher,
       currencies,
       handleSwitchCurrency,
-      buttonLocation,
-      isCurrencySwitcherOpen,
+      headerContainerLocation,
+      isCurrencySwitcherOpen
     } = this.props;
+
+    const { handleGiveCurrencySymbol, currency } = this.context;
     // console.log(this.props);
+
     return (
-      <>
-        <button onClick={handleToggleCurrencySwitcher}>
-          <span>$</span>
+      <div id="currency-switcher-container" className="currency-switcher-action-container">
+        <button onClick={handleToggleCurrencySwitcher} className="action-button">
+          <span>{handleGiveCurrencySymbol(currency)}</span>
           <i>{isCurrencySwitcherOpen ? "^" : "v"}</i>
         </button>
-        <div
-          className="currency-switcher"
-          style={{
-            top: `${buttonLocation.buttonBottom}px`,
-            display: isCurrencySwitcherOpen ? "grid" : "none",
-          }}
-        >
-          {isCurrencySwitcherOpen &&
+        {isCurrencySwitcherOpen &&
+          <div
+            className="currency-switcher"
+            style={{
+              top: `${headerContainerLocation.headerContainerBottom}px`,
+              display: isCurrencySwitcherOpen ? "grid" : "none",
+            }}
+          >
+            {isCurrencySwitcherOpen &&
             currencies.map((currency) => {
-              return (
-                <button
-                  id={currency}
-                  key={`${currency}_switcher`}
-                  className="currency"
-                  onClick={handleSwitchCurrency}
-                >
-                  {currency}
-                </button>
-              );
-            })}
-        </div>
-      </>
+              const isCurrentCurrency = currency === this.context.currency;
+                return (
+                  <button
+                    id={currency}
+                    key={`${currency}_switcher`}
+                    className={`currency ${isCurrentCurrency && `current`}`}
+                    onClick={(e) => {
+                      handleSwitchCurrency(e);
+                      handleToggleCurrencySwitcher();
+                    }
+                    }
+                  >
+                    <span>{handleGiveCurrencySymbol(currency)}</span>
+                    <span>{currency}</span>
+                  </button>
+                );
+              })}
+          </div>
+        }
+      </div>
     );
   }
 }

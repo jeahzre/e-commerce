@@ -5,68 +5,89 @@ import CartOverlay from "./CartOverlay";
 import CurrencySwitcher from "./CurrencySwitcher";
 
 class Header extends Component {
+  static contextType = AppContext;
+
   constructor(props) {
     super(props);
     this.state = {
       isCurrencySwitcherOpen: false,
       isCartOverlayOpen: false,
-      buttonLocation: {},
+      headerContainerLocation: {},
     };
     this.handleToggleCurrencySwitcher =
       this.handleToggleCurrencySwitcher.bind(this);
     this.handleToggleHeaderCart = this.handleToggleHeaderCart.bind(this);
-    this.handleSwitchTheme = this.handleSwitchTheme.bind(this);
   }
 
-  static contextType = AppContext;
+  componentDidMount() {
+    const handleBlur = (e) => {
+      // If we click element which is not inside the element we have focused. 
+      if (!e.target.closest('#currency-switcher-container') && this.state.isCurrencySwitcherOpen) {
+        this.setState({
+          isCurrencySwitcherOpen: false
+        })
+      } else if (!e.target.closest('#cart-overlay-action-container') && this.state.isCartOverlayOpen) {
+        this.setState({
+          isCartOverlayOpen: false
+        })
+      }
+    }
+    document.body.addEventListener("click", handleBlur);
+    return () => document.body.removeEventListener("click", handleBlur);
+  }
+
 
   handleToggleCurrencySwitcher(e) {
-    // console.log(e.currentTarget);
-    const button = e.target.getBoundingClientRect();
-    const buttonBottom = button.bottom;
+    const headerContainer = document.getElementById('header-container').getBoundingClientRect();
+    const headerContainerBottom = headerContainer.bottom;
     this.setState({
       isCurrencySwitcherOpen: !this.state.isCurrencySwitcherOpen,
-      buttonLocation: { buttonBottom },
+      headerContainerLocation: { headerContainerBottom },
     });
   }
 
   handleToggleHeaderCart(e) {
-    const button = e.target.getBoundingClientRect();
-    const buttonBottom = button.bottom;
+    const headerContainer = document.getElementById('header-container').getBoundingClientRect();
+    const headerContainerBottom = headerContainer.bottom;
     this.setState({
       isCartOverlayOpen: !this.state.isCartOverlayOpen,
-      buttonLocation: { buttonBottom },
+      headerContainerLocation: { headerContainerBottom },
     });
-  }
-  
-  handleSwitchTheme() {
-    document.getElementById('body').classList.toggle('dark-theme')
   }
 
   render() {
     const {
-      cart,
+      // cart,
       categories,
       handleCategoryUpdate,
       currencies,
       handleSwitchCurrency,
+      handleSwitchTheme
     } = this.context;
-    console.log(this.state);
-    let totalAmount = 0;
-    cart.map((product) => {
-      product.attributes.map((attribute) => {
-        totalAmount += attribute.amount;
-        return null;
-      });
-      return null;
-    });
+    // console.log('header state', this.state);
+
+    // let totalAmount = 0;
+    // cart.map((product) => {
+    //   product.attributes.map((attribute) => {
+    //     totalAmount += attribute.amount;
+    //     return null;
+    //   });
+    //   return null;
+    // });
+
     const currencySwitcherProps = {
       currencies,
+      isCurrencySwitcherOpen: this.state.isCurrencySwitcherOpen,
+      headerContainerLocation: this.state.headerContainerLocation,
       handleSwitchCurrency,
       handleToggleCurrencySwitcher: this.handleToggleCurrencySwitcher,
-      isCurrencySwitcherOpen: this.state.isCurrencySwitcherOpen,
-      buttonLocation: this.state.buttonLocation,
+      handleOnFocus: this.handleOnFocus
     };
+    const cartOverlayProps = {
+      isCartOverlayOpen: this.state.isCartOverlayOpen,
+      headerContainerLocation: this.state.headerContainerLocation,
+      handleToggleHeaderCart: this.handleToggleHeaderCart,
+    }
 
     return (
       <>
@@ -77,14 +98,14 @@ class Header extends Component {
                 {categories &&
                   categories.map((category, index) => {
                     return (
-                      <li key={index}>
-                        <button
+                      <li key={`${category}_category`}>
+                        <Link
                           id={category}
                           className="nav-label"
-                          onClick={handleCategoryUpdate}
+                          onClick={handleCategoryUpdate} to="/"
                         >
                           {category}
-                        </button>
+                        </Link>
                       </li>
                     );
                   })}
@@ -99,26 +120,12 @@ class Header extends Component {
                   <CurrencySwitcher {...currencySwitcherProps} />
                 </div>
                 <div className="cart-overlay-action">
-                  <button
-                    className="header-cart-btn"
-                    onClick={this.handleToggleHeaderCart}
-                  >
-                    <img
-                      src="/shopping-cart.svg"
-                      alt="cart"
-                      className="shopping-cart-img"
-                    />
-                    <span id="header-total-amount">{totalAmount}</span>
-                  </button>
-                  {this.state.isCartOverlayOpen && (
-                    <CartOverlay
-                      buttonLocation={this.state.buttonLocation}
-                      handleToggleHeaderCart={this.handleToggleHeaderCart}
-                    />
-                  )}
+                  <CartOverlay
+                    {...cartOverlayProps}
+                  />
                 </div>
               </div>
-              <div id="toggle-theme" onClick={this.handleSwitchTheme}>Theme</div>
+              <button id="toggle-theme" onClick={handleSwitchTheme}>Theme</button>
             </div>
           </header>
         </div>

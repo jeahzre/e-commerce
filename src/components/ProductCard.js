@@ -99,7 +99,7 @@ class ProductCard extends Component {
   render() {
     const { id, name, gallery, prices, brand, inStock, attributes } =
       this.state.productCard;
-    const { cartProducts, handleAddToCart } = this.context;
+    const { cartProducts, handleAddToCart, handleGiveCurrencySymbol } = this.context;
     // console.log(productIndex, attributes);
     const attributesProps = {
       attributes,
@@ -149,12 +149,12 @@ class ProductCard extends Component {
                 <h2 key={`${id}_5`} className="product-name">
                   {name}
                 </h2>
-                <Attributes {...attributesProps} />
+                <Attributes {...attributesProps} key={`${id}_attributes`}/>
                 {prices.map((price) => {
                   if (price.currency === this.context.currency) {
                     return (
                       <p key={`${id}_6`} className="product-card-price">
-                        {price.currency} {price.amount}
+                        {handleGiveCurrencySymbol(price.currency)} {price.amount}
                       </p>
                     );
                   }
@@ -184,7 +184,7 @@ class ProductCard extends Component {
                   });
                 }}
               >
-                v
+                {this.state.showTypeInCart ? "^" : "v"}
               </button>
             </div>
             {this.state.showTypeInCart && (
@@ -203,7 +203,7 @@ class ProductCard extends Component {
                       productIndex,
                       handleSetIsNotAnyInCart: this.handleSetIsNotAnyInCart
                     };
-                    return <CartProduct {...cartProductProps} />;
+                    return <CartProduct {...cartProductProps} key={`${cartProduct.id}_cart_product_product_card`}/>;
                   } else {
                     console.log("is not same id");
                     return null;

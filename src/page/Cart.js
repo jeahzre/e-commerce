@@ -106,7 +106,7 @@ class Cart extends Component {
     return (
       <>
         <div className="cart-container">
-          <h1 className="cart-title">Cart</h1>
+          <div className="cart-title">Cart</div>
           <div className="products-container">
             {cartProducts &&
               cartProducts.length > 0 &&
@@ -118,9 +118,9 @@ class Cart extends Component {
                     this.state.cartWithSelectedImageIndex,
                   handleChangeImage: this.handleChangeImage,
                 };
-                return <CartProduct {...cartProductProps} />;
+                return <CartProduct {...cartProductProps} key={`${cartProduct.id}_cart_product_cart`}/>;
               })}
-            {(cart.length === 0 || cart[0].id === "") && <h1>No Products</h1>}
+            {(cart.length === 0 || cart[0].id === "") && <div>No Products</div>}
             {cart.length > 0 && (
               <div className="clear-all-products-container">
                 <button
